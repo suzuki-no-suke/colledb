@@ -13,9 +13,15 @@ def index(name):
 @route('/add/:id')
 def add_id(id, db):
     # insert id into db
-    
+    db.execute('INSERT INTO test (specified_id) VALUES (?)', id).fetchone()
+    return template('{{id}} is added')
 
-
+@route('/show/:item')
+def show_id(item, db):
+    row = db.execute('SELECT * FROM test WHERE specified_id=?', item).fetchone()
+    if row:
+        return template('showitem', page=row)
+    return template('not found : {{item}}')
 
 SERVER_ADDRESS = '192.168.0.1'
 SERVER_PORTNO = 80
