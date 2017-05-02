@@ -9,7 +9,7 @@ def index(name):
 
 @route('/form')
 def show_form():
-    return template('')
+    return template('test_form')
 
 @route('/post', method='POST')
 def proc_post():
@@ -17,13 +17,15 @@ def proc_post():
     file = request.files.get('uploaded')
     print("title = {} / file = {}".format(title, file))
     if title and file:
-        raw = data.file.read()  # read all of file
-        filename = data.filename
+        raw = file.file.read()  # read all of file
+        filename = file.filename
         filelen = len(raw)
         mesg = "Upload succeed, file - {} ({} bytes.)".format(filename, filelen)
         print(mesg)
-        return template("Upload succeed, file - {{fname}} ({{size}} bytes.)", filename, filelen)
-    return template('post failed.')
+        return template("Upload succeed, file - {{fname}} ({{size}} bytes.)", 
+            fname=filename, 
+            size=filelen)
+    return 'post failed.'
 
 @route('/template/<id>')
 def template_id(id):
