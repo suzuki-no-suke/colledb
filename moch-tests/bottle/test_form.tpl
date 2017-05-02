@@ -24,6 +24,7 @@
 <form action="/post" method="POST" enctype="multipart/form-data">
    <p> select file : <input type="file" name="uploaded" /></p>
    <p> file title : <input type="text" name="title"/></p>
+   <input type="submit" value="アップロードする" />
 </form>
 
 </body>
