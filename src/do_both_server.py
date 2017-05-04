@@ -24,11 +24,14 @@ print("API server -> {}:80".format(API_SERVER_ADDRESS))
 @route('/app/list')
 def show_list():
 
-    books = [
-        {"id": 1, "image1": 1, "title": "test", "author": "test", "tags": ""},
-        {"id": 2, "image1": 2, "title": "test2", "author": "test2", "tags": "tags"},
-    ]
-    return template('page_list', book_list=books)
+    # temporary link to pages
+    tmp = """
+    <a href="/app/add">add form</a>
+    """[1:-1]
+    return tmp
+    #return template('page_list', book_list=books)
+
+
 
 @get('/app/book/<id>')
 def show_book(id):
