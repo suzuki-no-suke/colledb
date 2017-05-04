@@ -1,6 +1,6 @@
-from bottle import route, run, template
+from bottle import route, get, post, run, template
 import bottle
-import simplejson as json
+import os
 
 
 # app config
@@ -13,10 +13,21 @@ print("Server -> {}:{}".format(SERVER_ADDRESS, SERVER_PORTNO))
 
 
 ## api server address
-API_SERVER_ADDRESSS = 'localhost'
+API_SERVER_ADDRESS = 'localhost'
 if "API_SERVER_ADDRESS" in os.environ:
     API_SERVER_ADDRESS = os.environ["API_SERVER_ADDRESS"]
 print("API server -> {}:80".format(API_SERVER_ADDRESS))
+
+
+## root path
+ROOT_PATH = "."
+if "ROOT_PATH" in os.environ:
+    ROOT_PATH = os.environ["ROOT_PATH"]
+print("root path -> {}".format(ROOT_PATH))
+
+bottle.TEMPLATE_PATH.insert(0, os.path.abspath(ROOT_PATH + "/view/"))
+DATA_PATH = os.path.abspath(ROOT_PATH + "/data")
+
 
 
 # routing
@@ -62,5 +73,5 @@ def add_newbook_and_show_next_form():
 
 
 # run server
-app.run(host=SERVER_ADDRESS, port=SERVER_PORTNO, reloader=True)
+run(host=SERVER_ADDRESS, port=SERVER_PORTNO, reloader=True)
 
