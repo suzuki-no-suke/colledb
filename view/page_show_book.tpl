@@ -1,6 +1,6 @@
 <!DOCTYPE HTML>
-% parameter : book - dictionary - id, title, author, tags
-%           : image_nos - list of image id (1-4)
+% #parameter : book - dictionary - id, title, author, tags
+% #          : image_nos - list of image id (1-4)
 <html>
     <head>
         <meta charset="utf-8"/>
@@ -9,14 +9,17 @@
     <body>
         <div>
             %for img_no in image_nos:
-                <img href="/image/book['id']/{{img_no}}" />
+                <img src="/image/{{book['id']}}/{{img_no}}" height=200/>
             %end
             <p>title : {{book['title']}}</p>
             <p>author : {{book['author']}} </p>
             <p>tags : {{book['tags']}} </p>
         </div>
         <form action="/app/edit/{{book['id']}}" method="GET">
-            <input type="SUBMIT" value="Add new book"/>
+            <input type="SUBMIT" value="edit book"/>
+        </form>
+        <form action="/app/add" method="GET">
+            <input type="SUBMIT" value="add new book" />
         </form>
     </body>
 </html>

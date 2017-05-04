@@ -57,6 +57,7 @@ def show_list():
 
 @app.get('/app/book/<id>')
 def show_book(id, db):
+    print("book page request => {}".format(id))
     # gether book information
     row = db.execute('SELECT * FROM books WHERE id = ?', id).fetchone()
     if row:
@@ -70,7 +71,7 @@ def show_book(id, db):
         img_nos = []
         for no in range(1, 4):
             img_key = "image{}".format(no)
-            if row[img_key] and row[img_key] != string.empty:
+            if row[img_key] and not row[img_key].isspace():
                 img_nos.insert(0, no)
 
         return template('page_show_book', book=book, image_nos=img_nos)
