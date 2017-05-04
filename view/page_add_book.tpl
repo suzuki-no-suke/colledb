@@ -5,6 +5,7 @@
         <title>add new book</title>
     </head>
     <body>
+        <a href="/app/list">back to list</a>
         <form action="/app/add" method="POST" enctype="multipart/form-data">
             <p>book image1 <input type="file" name="image1"/></p>
             <p>book image2 <input type="file" name="image2"/></p>
