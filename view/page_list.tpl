@@ -24,7 +24,7 @@
                <p>No Image</p>
            %end
            </td>
-           <td><p>{{book['summary']}}</p></td>
+           <td><p><a href="/app/book/{{book['id']}}">{{book['summary']}}</a></p></td>
            <td><a href="/app/edit/{{book['id']}}"> edit book info </a></td>
         </tr>
         %end

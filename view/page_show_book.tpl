@@ -7,6 +7,7 @@
         <title>book [{{book['id']}}] - {{book['title']}}</title>
     </head>
     <body>
+        <p><a href="/app/list"> back to list </a></p>
         <div>
             %for img_no in image_nos:
                 <img src="/image/{{book['id']}}/{{img_no}}" height=200/>
