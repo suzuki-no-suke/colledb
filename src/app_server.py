@@ -25,7 +25,7 @@ print("API server -> {}:80".format(API_SERVER_ADDRESS))
 def show_list():
 
     books = [
-        {"id": 1, image1": 1, "title": "test", "author": "test", "tags": ""},
+        {"id": 1, "image1": 1, "title": "test", "author": "test", "tags": ""},
         {"id": 2, "image1": 2, "title": "test2", "author": "test2", "tags": "tags"},
     ]
     return template('page_list', book_list=books)
