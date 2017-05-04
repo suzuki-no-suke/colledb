@@ -1,11 +1,9 @@
-from bottle import route, get, post, run, template, request
+from bottle import route, get, post, abort, run, template, static_file, request
 import bottle.ext.sqlite
 import bottle
 import os
 import uuid
 import datetime
-
-
 
 
 # app config
@@ -146,7 +144,30 @@ def add_newbook_and_show_next_form(db):
     return template('page_add_book')
 
 
+@app.get('/image/<book_id>/<image_no:int>')
+def get_book_image(book_id, image_no, db):
+    print("request -> book {} / image {}".format(book_id, image_no))
+    # check image_no
+    if not (image_no >= 1 and image_no <= 4):
+        return abort(404, 'image - wrong image_not') 
+    # get image uuid
+    img_key = "image{}".format(image_no) 
+    query = 'SELECT {} AS img_id FROM books WHERE id = ?'.format(img_key)
+    print("image query -> {}".format(query))
+    row = db.execute(query, book_id).fetchone()
+    if row:
+        img_id = row['img_id']
+        file_path = os.path.abspath(DATA_PATH + "/" + img_id)
+        print("file -> {}".format(file_path))
+        if os.path.exists(file_path):
+            # TODO : not safe
+            return static_file(img_id, root=DATA_PATH)
+    abort(404, "file not found")
 
-# run server
+@app.error(404)
+def on_404(error):
+    return '404, <a href="/">goto toppage</a>' + error.body
+
+
 app.run(host=SERVER_ADDRESS, port=SERVER_PORTNO)
 
