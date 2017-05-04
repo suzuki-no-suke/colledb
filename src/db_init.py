@@ -9,15 +9,15 @@ CREATE TABLE IF NOT EXISTS books (
     title TEXT NOT NULL DEFAULT '',
     author TEXT NOT NULL DEFAULT '',
     tags TEXT NOT NULL DEFAULT '',
-    created TEXT NOT NULL DEFAULT datetime('now'),
-    updated TEXT NOT NULL DEFAULT datetime('now'),
+    created TEXT NOT NULL DEFAULT '',
+    updated TEXT NOT NULL DEFAULT '',
     image1 TEXT NOT NULL DEFAULT '',
     image2 TEXT NOT NULL DEFAULT '',
     image3 TEXT NOT NULL DEFAULT '',
-    image4 TEXT NOT NULL DEFAULT '',
+    image4 TEXT NOT NULL DEFAULT ''
 )
 """[1:-1]
-conn = sqlite3.connection("")
+conn = sqlite3.connect("data.db")
 
 # create default table
 conn.execute(create_statement)
