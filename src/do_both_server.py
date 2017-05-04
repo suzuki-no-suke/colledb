@@ -56,17 +56,33 @@ def show_list():
 
 
 @app.get('/app/book/<id>')
-def show_book(id):
+def show_book(id, db):
+    # gether book information
+    row = db.execute('SELECT * FROM books WHERE id = ?', id).fetchone()
+    if row:
+        book = {}
+        book['id'] = row['id']
+        book['title'] = row['title']
+        book['author'] = row['author']
+        book['tags'] = row['tags']
 
-    return "NOT IMPLEMENT"
+        # gether image information
+        img_nos = []
+        for no in range(1, 4):
+            img_key = "image{}".format(no)
+            if row[img_key] and row[img_key] != string.empty:
+                img_nos.insert(0, no)
+
+        return template('page_show_book', book=book, image_nos=img_nos)
+    return abort(404, "book id {} is not found.".format(id))
 
 @app.post('/app/book/<id>')
 def update_book_and_show(id):
-    return "NOT IMPLEMENT"
+    return 'NOT IMPLEMENT <a href="/"> top page </a>'
 
 @app.get('/app/edit/<id>')
 def edit_book_form(id):
-    return "NOT IMPLEMENT"
+    return 'NOT IMPLEMENT <a href="/"> top page </a>'
 
 
 @app.get('/app/add')
