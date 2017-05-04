@@ -44,15 +44,38 @@ bottle.TEMPLATE_PATH.insert(0, os.path.abspath(ROOT_PATH + "/view/"))
 # routing
 @app.route('/')
 @app.route('/app/list')
-def show_list():
+def show_list(db):
+    # gether book information
+    rows = db.execute("SELECT * FROM books").fetchall()
+    book_list = []
+    if rows:
+        for r in rows:
+            book = {}
+            book['id'] = r['id']
+            # make summary
+            summary = "{} - {} - {}".format(
+                r['title'][:50],
+                r['author'][:20],
+                r['tags'][:20])
+            book['summary'] = summary
+            # find image
+            img_no = -1
+            for no in range(1, 4):
+                img_key = 'image{}'.format(no)
+                if r[img_key] and not r[img_key].isspace():
+                    img_no = no
+                    break   # for no loop
+            img_url = "/image/{}/{}".format(book['id'], img_no)
+            book['img_src'] = img_url
 
-    # temporary link to pages
-    tmp = """
-    <a href="/app/add">add form</a>
+            book_list.append(book)
+        return template('page_list', book_list=book_list)
+    # no books, or error
+    temporary_top = """
+    <p> no book or some error happens. <p>
+    Go to <a href="/app/add">add form</a>
     """[1:-1]
-    return tmp
-    #return template('page_list', book_list=books)
-
+    return temporary_top
 
 
 @app.get('/app/book/<id>')
