@@ -8,22 +8,23 @@
         <title>add new book</title>
     </head>
     <body>
+        <a href='/app/add'>add new book</a>
         <table>
         <tr>
             <th>image<th>
             <th>book summary</th>
             <th>edit</th>
         </tr>
-        %for book in book_list
+        %for book in book_list:
         <tr>
            <td>
            %if book['img_src']:
                <img src="{{book['img_src']}}" height=100 />
-           %else
+           %else:
                <p>No Image</p>
            %end
            </td>
-           <td><p>summary</p></td>
+           <td><p>{{book['summary']}}</p></td>
            <td><a href="/app/edit/{{book['id']}}"> edit book info </a></td>
         </tr>
         %end

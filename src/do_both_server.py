@@ -4,6 +4,7 @@ import bottle
 import os
 import uuid
 import datetime
+import codecs
 
 
 # app config
@@ -45,18 +46,26 @@ bottle.TEMPLATE_PATH.insert(0, os.path.abspath(ROOT_PATH + "/view/"))
 @app.route('/')
 @app.route('/app/list')
 def show_list(db):
+    #db.text_factory = str 
+
     # gether book information
     rows = db.execute("SELECT * FROM books").fetchall()
     book_list = []
     if rows:
         for r in rows:
+            title = r['title'].encode('utf-8')
+            author = r['author'].encode('utf-8')
+            tags = r['tags'].encode('utf-8')
+            #print("result -> {} / t {}, au {}, tag {}".format(
+            #    r['id'], title, author, tags))
             book = {}
             book['id'] = r['id']
             # make summary
-            summary = "{} - {} - {}".format(
-                r['title'][:50],
-                r['author'][:20],
-                r['tags'][:20])
+            summary = title + " / " + author + " / " + tags
+            # TODO : fix below : it does not work
+            #summary = "{} - {} - {}".format(
+            #    title[:50], author[:20], tags[:20])
+            #print("summary -> {} / type -> {}".format(summary, type(summary)))
             book['summary'] = summary
             # find image
             img_no = -1
@@ -65,7 +74,9 @@ def show_list(db):
                 if r[img_key] and not r[img_key].isspace():
                     img_no = no
                     break   # for no loop
-            img_url = "/image/{}/{}".format(book['id'], img_no)
+            img_url = ""
+            if img_no >= 1:
+                img_url = "/image/{}/{}".format(book['id'], img_no)
             book['img_src'] = img_url
 
             book_list.append(book)
