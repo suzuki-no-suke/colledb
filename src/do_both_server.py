@@ -69,7 +69,7 @@ def show_list(db):
             book['summary'] = summary
             # find image
             img_no = -1
-            for no in range(1, 4):
+            for no in range(1, 5):
                 img_key = 'image{}'.format(no)
                 if r[img_key] and not r[img_key].isspace():
                     img_no = no
@@ -103,13 +103,14 @@ def show_book(id, db):
 
         # gether image information
         img_nos = []
-        for no in range(1, 4):
+        for no in range(1, 5):
             img_key = "image{}".format(no)
             if row[img_key] and not row[img_key].isspace():
                 img_nos.insert(0, no)
 
         return template('page_show_book', book=book, image_nos=img_nos)
     return abort(404, "book id {} is not found.".format(id))
+
 
 @app.post('/app/book/<id>')
 def update_book_and_show(id, db):
@@ -123,12 +124,12 @@ def update_book_and_show(id, db):
     b_title = request.forms.get('title')
     b_author = request.forms.get('author')
     b_tags = request.forms.get('tags')
-    b_update = datetime.datetime.now.strftime('%Y-%m-%d %H:%M:%S')
+    b_update = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
     # image process
     updated_images = {}
     # TODO : be class or function or method
-    for no in range(1, 4):
+    for no in range(1, 5):
         img_key = "image{}".format(no)
         if img_key in request.files:
             image = request.files.get(img_key)
@@ -142,19 +143,20 @@ def update_book_and_show(id, db):
             updated_images[img_key] = b_filename
     
     # update book info
-    image_all_key = ['image{}'.format(no) for no in range(1, 4)]
+    image_all_key = ['image{}'.format(no) for no in range(1, 5)]
     img_query_key = [key for key in image_all_key if key in updated_images.keys()]
     img_id_value = tuple(updated_images[key] for key in img_query_key)
     query_value = (b_title, b_author, b_tags, b_update,)
-    all_query_key = ['title', 'author', 'tags', 'update'] + img_query_key
+    all_query_key = ['title', 'author', 'tags', 'updated'] + img_query_key
     query = """
-    UPDATE book SET
+    UPDATE books SET
        {} = ?
     WHERE id = ?
     """[1:-1].format(' = ?,'.join(all_query_key))
     print("query => {}".format(query))
-    db.execute(query,
-        query_value + img_id_value + (b_id,))
+    value_tuple = query_value + img_id_value + (b_id,)
+    print("value -> {}".format(value_tuple))
+    db.execute(query, value_tuple)
     db.commit()
 
     # gether book info
@@ -165,7 +167,7 @@ def update_book_and_show(id, db):
         book['title'] = row['title']
         book['author'] = row['author']
         book['tags'] = row['tags']
-        for no in range(1, 4):
+        for no in range(1, 5):
             imgkey = "image{}".format(no)
             book[imgkey] = row[imgkey]
         return template('page_edit_book', book=book)
@@ -186,7 +188,7 @@ def edit_book_form(id, db):
         book['title'] = row['title']
         book['author'] = row['author']
         book['tags'] = row['tags']
-        for no in range(1, 4):
+        for no in range(1, 5):
             imgkey = "image{}".format(no)
             book[imgkey] = row[imgkey]
         return template('page_edit_book', book=book)
