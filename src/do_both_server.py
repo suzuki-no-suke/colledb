@@ -112,12 +112,86 @@ def show_book(id, db):
     return abort(404, "book id {} is not found.".format(id))
 
 @app.post('/app/book/<id>')
-def update_book_and_show(id):
-    return 'NOT IMPLEMENT <a href="/"> top page </a>'
+def update_book_and_show(id, db):
+    print("edit book - posted {}".format(id))
+    # TODO : "PUT" is better, but, do so ?
+    # utf-8 workaround
+    db.text_factory = str
+
+    # gether book info
+    b_id = id
+    b_title = request.forms.get('title')
+    b_author = request.forms.get('author')
+    b_tags = request.forms.get('tags')
+    b_update = datetime.datetime.now.strftime('%Y-%m-%d %H:%M:%S')
+
+    # image process
+    updated_images = {}
+    # TODO : be class or function or method
+    for no in range(1, 4):
+        img_key = "image{}".format(no)
+        if img_key in request.files:
+            image = request.files.get(img_key)
+            ext = os.path.splitext(image.filename)
+            imgid = uuid.uuid4()
+            b_filename = str(imgid) + ext[1]
+            print("save file name -> {}".format(b_filename))
+            img_path = os.path.abspath(DATA_PATH + "/" + b_filename)
+            with open(img_path, "wb") as fimg:
+                fimg.write(image.file.read())
+            updated_images[img_key] = b_filename
+    
+    # update book info
+    image_all_key = ['image{}'.format(no) for no in range(1, 4)]
+    img_query_key = [key for key in image_all_key if key in updated_images.keys()]
+    img_id_value = tuple(updated_images[key] for key in img_query_key)
+    query_value = (b_title, b_author, b_tags, b_update,)
+    all_query_key = ['title', 'author', 'tags', 'update'] + img_query_key
+    query = """
+    UPDATE book SET
+       {} = ?
+    WHERE id = ?
+    """[1:-1].format(' = ?,'.join(all_query_key))
+    print("query => {}".format(query))
+    db.execute(query,
+        query_value + img_id_value + (b_id,))
+    db.commit()
+
+    # gether book info
+    row = db.execute("SELECT * FROM books WHERE id = ?", id).fetchone()
+    if row:
+        book = {}
+        book['id'] = row['id']
+        book['title'] = row['title']
+        book['author'] = row['author']
+        book['tags'] = row['tags']
+        for no in range(1, 4):
+            imgkey = "image{}".format(no)
+            book[imgkey] = row[imgkey]
+        return template('page_edit_book', book=book)
+    # on error
+    return abort(404, "book id {} is not found.".format(id))
 
 @app.get('/app/edit/<id>')
-def edit_book_form(id):
-    return 'NOT IMPLEMENT <a href="/"> top page </a>'
+def edit_book_form(id, db):
+    print("edit book {}".format(id))
+    # utf-8 workaround
+    db.text_factory = str
+
+    # gether book info
+    row = db.execute("SELECT * FROM books WHERE id = ?", id).fetchone()
+    if row:
+        book = {}
+        book['id'] = row['id']
+        book['title'] = row['title']
+        book['author'] = row['author']
+        book['tags'] = row['tags']
+        for no in range(1, 4):
+            imgkey = "image{}".format(no)
+            book[imgkey] = row[imgkey]
+        return template('page_edit_book', book=book)
+    # on error
+    return abort(404, "book id {} is not found.".format(id))
 
 
 @app.get('/app/add')
