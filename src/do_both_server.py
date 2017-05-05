@@ -89,11 +89,11 @@ def show_list(db):
     return temporary_top
 
 
-@app.get('/app/book/<id>')
-def show_book(id, db):
-    print("book page request => {}".format(id))
+@app.get('/app/book/<book_id:int>')
+def show_book(book_id, db):
+    print("book page request => {}".format(book_id))
     # gether book information
-    row = db.execute('SELECT * FROM books WHERE id = ?', id).fetchone()
+    row = db.execute('SELECT * FROM books WHERE id = ?', (book_id,)).fetchone()
     if row:
         book = {}
         book['id'] = row['id']
@@ -112,15 +112,15 @@ def show_book(id, db):
     return abort(404, "book id {} is not found.".format(id))
 
 
-@app.post('/app/book/<id>')
-def update_book_and_show(id, db):
-    print("edit book - posted {}".format(id))
+@app.post('/app/book/<book_id:int>')
+def update_book_and_show(book_id, db):
+    print("edit book - posted {}".format(book_id))
     # TODO : "PUT" is better, but, do so ?
     # utf-8 workaround
     db.text_factory = str
 
     # gether book info
-    b_id = id
+    b_id = book_id
     b_title = request.forms.get('title')
     b_author = request.forms.get('author')
     b_tags = request.forms.get('tags')
@@ -160,7 +160,7 @@ def update_book_and_show(id, db):
     db.commit()
 
     # gether book info
-    row = db.execute("SELECT * FROM books WHERE id = ?", id).fetchone()
+    row = db.execute("SELECT * FROM books WHERE id = ?", (b_id,)).fetchone()
     if row:
         book = {}
         book['id'] = row['id']
@@ -174,14 +174,14 @@ def update_book_and_show(id, db):
     # on error
     return abort(404, "book id {} is not found.".format(id))
 
-@app.get('/app/edit/<id>')
-def edit_book_form(id, db):
-    print("edit book {}".format(id))
+@app.get('/app/edit/<book_id:int>')
+def edit_book_form(book_id, db):
+    print("edit book {}".format(book_id))
     # utf-8 workaround
     db.text_factory = str
 
     # gether book info
-    row = db.execute("SELECT * FROM books WHERE id = ?", id).fetchone()
+    row = db.execute("SELECT * FROM books WHERE id = ?", (book_id,)).fetchone()
     if row:
         book = {}
         book['id'] = row['id']
@@ -271,7 +271,7 @@ def add_newbook_and_show_next_form(db):
     return template('page_add_book')
 
 
-@app.get('/image/<book_id>/<image_no:int>')
+@app.get('/image/<book_id:int>/<image_no:int>')
 def get_book_image(book_id, image_no, db):
     print("request -> book {} / image {}".format(book_id, image_no))
     # check image_no
@@ -281,7 +281,7 @@ def get_book_image(book_id, image_no, db):
     img_key = "image{}".format(image_no) 
     query = 'SELECT {} AS img_id FROM books WHERE id = ?'.format(img_key)
     print("image query -> {}".format(query))
-    row = db.execute(query, book_id).fetchone()
+    row = db.execute(query, (book_id,)).fetchone()
     if row:
         img_id = row['img_id']
         file_path = os.path.abspath(DATA_PATH + "/" + img_id)
